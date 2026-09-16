@@ -1,0 +1,55 @@
+========================================================================
+ DshShell 安装手册（接收方版 · 2026-09-16）
+ 全程不需要 VPN。两条通道分工：
+   · 网盘（夸克/百度）＝ 放"要安装的 APK"和这份手册（点开就能装/看）
+   · GitHub 仓库（走国内快源）＝ 放"Termux 里要 curl 的载荷"（几秒下完）
+   为什么不把安装包也放网盘？因为手机网盘下载的文件，Termux 一般读不到
+   （安卓把下载目录和 Termux 家目录隔离了）—— 所以载荷必须由 Termux 自己下。
+========================================================================
+
+【第 0 步】装两个 App（从网盘下，点开装）
+  1) Termux 本体        ：termux-app_v0.118.3+github-debug_arm64-v8a.apk（34MB）
+  2) Termux:API（可选）  ：termux-api-app_v0.53.0+github.debug.apk（8.5MB）
+     它的用处：以后想把微信/QQ 收到的文件直接拿进 Termux 时用 termux-storage-get。
+  安装时系统会问「允许安装未知应用」→ 允许。
+  ★ 两个都用上面这两个文件，别混用应用商店版本（签名必须同源，否则 API 不工作）。
+
+【第 1 步】打开 Termux，逐行粘贴（共 3 行）
+  termux-setup-storage
+  cd ~
+  curl -L -O 【快源】/【仓库直链】/dsh-mobile-一键安装.sh
+  bash dsh-mobile-一键安装.sh
+
+  · 【快源】用实测最快的国内加速前缀（无 VPN 实测：gh-proxy.com 1.35s、ghproxy.net 1.83s）
+  · 一键脚本里已经内置了安装包地址和 10 个候选源，会自己把安装包拉下来并校验 SHA256，
+    你不需要再手动下安装包。
+  · 如果那 3 行下不动，退路见文件末尾「下不动怎么办」。
+
+【第 2 步】安装器会问你选哪种模式
+  2 = 本机 APK 版（推荐）：在你手机上现场编译并签名 DshShell，装完点图标就能用
+  1 = 浏览器模式：最省事，但需要手机里有浏览器（推荐 Edge，国内可直接下载）
+  ★ APK 模式不需要任何浏览器 —— 它用的是系统 WebView。
+
+【第 3 步】装完检查
+  打开终端输入： dshstatus          # 服务和看门狗各 1 个实例才算正常
+  想修复就跑：   dsh-mobile-repair  # DSH 升级后必跑
+  手机设置里建议：Termux 自启动开、省电无限制、最近任务里把 Termux 加锁。
+
+【下不动怎么办（按顺序试）】
+  ① 换个快源前缀再试：gh-proxy.com → ghproxy.net → cdn.jsdelivr.net → raw.githubusercontent.com
+  ② 一键脚本会自动换源；若 10 个源都失败，它会告诉你三条人工办法
+  ③ 让发送方直接把 dsh-mobile-20260916.tar.gz 发给你（微信/QQ），保存到「下载」后：
+        cp ~/storage/downloads/dsh-mobile-20260916.tar.gz ~/
+        bash dsh-mobile-一键安装.sh        # 它会优先用本机已有的包
+  ④ 和发送方在同一 Wi-Fi/热点时：他在自己手机跑 dsh-share，你按他屏幕上的命令 curl
+
+【装完后想传文件进 Termux】
+  装了 Termux:API 的话，一条命令：
+        termux-storage-get ~/文件名      # 弹出文件选择器，选中即写进 Termux 家目录
+  或（不给权限也能用的小技巧）把脚本全文复制，然后：
+        termux-clipboard-get > 文件名
+
+【出问题看这些】
+  包内 docs/故障排查.md、docs/权限与安全.md、docs/手动安装.md
+  万能修复：dsh-mobile-repair
+========================================================================
