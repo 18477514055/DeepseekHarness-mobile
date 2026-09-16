@@ -16,6 +16,14 @@
 | `dsh-mobile-20260916.tar.gz` | 安装包本体（约 153 KB） |
 | `dsh-mobile-20260916.tar.gz.sha256` | 上面那个包的校验和 |
 
+**直链**（仓库 `18477514055/DeepseekHarness-mobile`，分支 `main`）：
+
+```
+https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260916.tar.gz
+https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-一键安装.sh
+https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260916.tar.gz.sha256
+```
+
 **先读文档再动手**（这两份是权威说明，按需选一份）：
 
 - `分享-DshShell-安装说明.md` —— 完整说明：这是什么、怎么装、掉线怎么办。**建议先看这份。**
@@ -27,7 +35,7 @@
 ## 二、想自己核对一下再跑（推荐）
 
 ```bash
-curl -L -O https://raw.githubusercontent.com/<你的用户名>/dsh-mobile/main/dsh-mobile-20260916.tar.gz
+curl -L -O https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260916.tar.gz
 sha256sum dsh-mobile-20260916.tar.gz
 ```
 
@@ -46,10 +54,10 @@ f20e93a3d80286dbd8ceb7ac337ecaaabc1b3aac2ace57252756193e17152621
 下面几个加速前缀是**实测过可用**的（按快慢排序），把整条 raw 地址拼在后面即可：
 
 ```
-https://gh-proxy.com/https://raw.githubusercontent.com/<用户名>/dsh-mobile/main/dsh-mobile-20260916.tar.gz
-https://ghproxy.net/https://raw.githubusercontent.com/<用户名>/dsh-mobile/main/dsh-mobile-20260916.tar.gz
-https://cdn.jsdelivr.net/gh/<用户名>/dsh-mobile@main/dsh-mobile-20260916.tar.gz
-https://raw.githubusercontent.com/<用户名>/dsh-mobile/main/dsh-mobile-20260916.tar.gz
+https://gh-proxy.com/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260916.tar.gz
+https://ghproxy.net/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260916.tar.gz
+https://cdn.jsdelivr.net/gh/18477514055/DeepseekHarness-mobile@main/dsh-mobile-20260916.tar.gz
+https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260916.tar.gz
 ```
 
 一键脚本内部已经带了多个候选源，会逐个试、失败自动换下一个，并**对每个源都校验 SHA256**才采用。
