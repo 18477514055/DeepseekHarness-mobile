@@ -1,0 +1,2 @@
+# DeepseekHarness-mobile
+这是一个提供跨端交互和其他新功能的桌面端和移动端适配的仓库
