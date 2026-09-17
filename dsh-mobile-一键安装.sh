@@ -11,10 +11,15 @@
 # ============================================================
 set -u
 # ↓↓↓ 发布者需要把下面两行填上（填好后本脚本就能独立工作）↓↓↓
-TARBALL_URL="${DSHM_TARBALL_URL:-__请填写安装包的下载直链__}"
+TARBALL_URL="${DSHM_TARBALL_URL:-https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260916.tar.gz}"
 SHA256="f20e93a3d80286dbd8ceb7ac337ecaaabc1b3aac2ace57252756193e17152621"
 # ★ 多源候选（打包时由 dist/发布直链.txt 自动生成）：GitHub 原址 + 国内加速前缀，逐个试
-MIRRORS=()
+MIRRORS=(
+  "https://cdn.jsdelivr.net/gh/18477514055/DeepseekHarness-mobile@main/dsh-mobile-20260916.tar.gz"
+  "https://ghproxy.net/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260916.tar.gz"
+  "https://gh-proxy.com/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260916.tar.gz"
+  "https://github.com/18477514055/DeepseekHarness-mobile/releases/latest/download/dsh-mobile-20260916.tar.gz"
+)
 # ↑↑↑ 发布者填写区结束 ↑↑↑
 
 NAME="dsh-mobile-setup"
