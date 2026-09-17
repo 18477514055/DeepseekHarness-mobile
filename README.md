@@ -16,6 +16,31 @@
 | `dsh-mobile-20260916.tar.gz` | 安装包本体（约 153 KB） |
 | `dsh-mobile-20260916.tar.gz.sha256` | 上面那个包的校验和 |
 
+### ★ 更省事的一条路：直接用 Release 的整包 zip（2026-09-17 起）
+
+Raw 直链下不动时（比如本机 github.com 被代理拦了），用 Release：
+
+```
+https://github.com/18477514055/DeepseekHarness-mobile/releases/latest
+```
+
+里面有 **`dsh-mobile-20260917.zip`**（约 169 KB）—— 解压后一个目录就是全套
+（一键脚本 + 载荷 + 校验和 + 三份文档）。放进 Termux 家目录或 Download，然后：
+
+```bash
+cd <解压出来的目录> && bash dsh-mobile-一键安装.sh
+```
+
+脚本会**优先用同目录里的 `dsh-mobile-20260916.tar.gz`**（先校验再采用），所以外网不通也能装。
+
+> ⚠️ 2026-09-17 之前，一键脚本里的 `TARBALL_URL` 与 `MIRRORS` 是**空占位符**，
+> 脚本只能靠"本机已有安装包"那条退路工作。**现已填入可用直链 + 4 个候选源**，
+> 脚本从此可独立工作（每个源都校验 SHA256 才采用）。
+>
+> ⚠️ Release 里那份脚本附件的文件名是 **ASCII 的 `install-dsh-mobile.sh`**（内容与
+> `dsh-mobile-一键安装.sh` 完全相同）。原因：非 ASCII 文件名经命令行上传时会被吃掉字符
+> （实测传成了 `dsh-mobile-.sh`）。**仓库内那份仍是正确的中文名**，以仓库为准。
+
 **直链**（仓库 `18477514055/DeepseekHarness-mobile`，分支 `main`）：
 
 ```
