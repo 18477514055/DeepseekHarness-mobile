@@ -12,9 +12,9 @@
 set -u
 # ↓↓↓ 发布者需要把下面两行填上（填好后本脚本就能独立工作）↓↓↓
 TARBALL_URL="${DSHM_TARBALL_URL:-}"
-SHA256="2cade7b8b6129d208a4aa81a04e61271ee3b2439d9d31fa12a08853e7191dc31"
+SHA256="23659a286b02fe3305ad05486bd0dd94f9cbd3ad7fbe6b8529bde447e024bf8a"
 # ★ 多源候选（打包时由 dist/发布直链.txt 自动生成）：GitHub 原址 + 国内加速前缀，逐个试
-MIRRORS=("https://gh-proxy.com/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://ghproxy.net/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://cdn.jsdelivr.net/gh/18477514055/DeepseekHarness-mobile@main/dsh-mobile-20260920.tar.gz" "https://ghfast.top/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://github.com/18477514055/DeepseekHarness-mobile/raw/main/dsh-mobile-20260920.tar.gz")
+MIRRORS=("https://ghproxy.net/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://ghproxy.net/https://cdn.jsdelivr.net/gh/18477514055/DeepseekHarness-mobile@main/dsh-mobile-20260920.tar.gz" "https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://gh-proxy.com/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://ghfast.top/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://cdn.jsdelivr.net/gh/18477514055/DeepseekHarness-mobile@main/dsh-mobile-20260920.tar.gz" "https://github.com/18477514055/DeepseekHarness-mobile/raw/main/dsh-mobile-20260920.tar.gz")
 # ↑↑↑ 发布者填写区结束 ↑↑↑
 
 NAME="dsh-mobile-setup"
@@ -32,13 +32,18 @@ if [ -n "${DSHM_LOCAL:-}" ]; then
   LOCAL="$DSHM_LOCAL"
 else
   # ★ 逐个候选**先校验再采用**：Download 里常躺着旧版本的包，不能拿它硬装（否则报"校验不通过"让人一头雾水）
-  for c in "$(dirname "$0")"/dsh-mobile-*.tar.gz \
-           "$(dirname "$0")"/*.tar.gz \
-           /storage/emulated/0/Download/dsh-mobile-*.tar.gz \
-           /sdcard/Download/dsh-mobile-*.tar.gz \
-           "$HOME/storage/downloads"/dsh-mobile-*.tar.gz \
+  # ★ 2026-09-20 调整顺序：**Termux 私有目录优先**。
+  #   原因：网盘方案要求用户把载荷放进 Termux 私有目录（因为很多手机上
+  #   共享目录根本读不到）。原来共享目录排在前面 ⇒ 优先用了共享目录那份，
+  #   在"读不到共享目录"的手机上就等于没找到 → 白跑一趟网络。
+  #   私有目录永远读得到，所以放最前；共享目录退为兜底（能读时也能用）。
+  for c in "$HOME"/dsh-mobile-*.tar.gz \
            "$HOME/Download"/dsh-mobile-*.tar.gz \
-           "$HOME"/dsh-mobile-*.tar.gz; do
+           "$(dirname "$0")"/dsh-mobile-*.tar.gz \
+           "$(dirname "$0")"/*.tar.gz \
+           "$HOME/storage/downloads"/dsh-mobile-*.tar.gz \
+           /storage/emulated/0/Download/dsh-mobile-*.tar.gz \
+           /sdcard/Download/dsh-mobile-*.tar.gz; do
     [ -f "$c" ] || continue
     g=$(sha256sum "$c" 2>/dev/null | cut -d' ' -f1)
     if [ "$g" = "$SHA256" ]; then LOCAL="$c"; break; fi
