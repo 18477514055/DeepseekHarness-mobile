@@ -58,11 +58,17 @@
       装好后先<b>别急着打开</b>，回到本页做第 2 步。
     </div>
     <details>
-      <summary>下不动 / 想手动选版本</summary>
+      <summary>下不动 / 想换个来源 / 想手动选版本</summary>
       <div class="alt" style="margin-top:8px">
-        官方发布页（共 6 个文件，认准你的机型）：
+        <b>方式一（推荐 · 国内直连，不用梯子）</b>
+        <a href="" id="quark-link" target="_blank" rel="noopener">夸克网盘下载 Termux</a>
+        <span class="note" id="quark-note" style="display:none"></span>
+        <div class="note" style="margin-top:4px">
+          手机浏览器打开 → 找到 <code>termux-app_v0.118.3+github-debug_arm64-v8a.apk</code> → 下载。
+        </div>
+        <b style="display:block;margin-top:14px">方式二（GitHub 直链 · 需要能访问 GitHub）</b>
         <a href="https://github.com/termux/termux-app/releases/latest" target="_blank" rel="noopener">github.com/termux/termux-app/releases</a>
-        <a href="https://gh-proxy.com/https://github.com/termux/termux-app/releases/latest" target="_blank" rel="noopener">↑ 加速打开（推荐）</a>
+        <a href="https://gh-proxy.com/https://github.com/termux/termux-app/releases/latest" target="_blank" rel="noopener">↑ 加速打开</a>
         <div class="note" style="margin-top:10px">
           大多数手机（近几年 64 位机型）用 <code>arm64-v8a</code>；<br>
           很老的机型用 <code>armeabi-v7a</code>；<br>
@@ -139,6 +145,16 @@
   var REF = "main";
   var BOOT = "bootstrap.sh";
 
+  /* ★ 2026-09-20：Termux 本体改用**夸克网盘**分发（用户决定）。
+     为什么：GitHub 直链在没梯子的手机上不一定通，而 Termux 是"绝对依赖"、
+     必须人人拿得到。夸克国内直连、需求量的人基本都有账号。
+     --- 发布者只需改下面这一处 ---
+     QUARK_URL 留空 = 退回原来的 GitHub 直链行为（页面不会坏）。 */
+  var QUARK_URL = "@QUARK_URL@";
+  var QUARK_CODE = "@QUARK_CODE@";   /* 提取码，没有就留空 */
+  if (QUARK_URL.indexOf("@") === 0) QUARK_URL = "";      /* 占位符没被替换 → 当没配 */
+  if (QUARK_CODE.indexOf("@") === 0) QUARK_CODE = "";
+
   /* 加速前缀（2026-09-19 实测可用；顺序=优先尝试顺序） */
   var PROXIES = [
     "https://gh-proxy.com/",
@@ -201,9 +217,31 @@
     + (arch === "arm64-v8a" ? "（绝大多数现役 64 位手机都是这个）" : "")
     + "。点下面按钮下载。";
 
-  /* 两个下载按钮 */
-  bindDownload(document.getElementById("dl-apk"),
-    urlsFor(relBase, apkName), "Termux", document.getElementById("st1"));
+  /* ★ 2026-09-20：主按钮优先走夸克（没梯子也能下）；配了才这么走，
+     没配就保持原来的"GitHub 多源回退"行为 —— 页面不会因为没配而坏。 */
+  var apkBtn = document.getElementById("dl-apk");
+  var quarkA = document.getElementById("quark-link");
+  var quarkNote = document.getElementById("quark-note");
+  if (QUARK_URL) {
+    /* 主按钮直接开夸克 */
+    apkBtn.textContent = "下载 Termux（夸克网盘）";
+    apkBtn.addEventListener("click", function () {
+      say(document.getElementById("st1"), "正在打开夸克网盘…在里面找到 " + apkName + " 下载即可。", "");
+      var a = document.createElement("a");
+      a.href = QUARK_URL; a.target = "_blank"; a.rel = "noopener";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    });
+    quarkA.href = QUARK_URL;
+    if (QUARK_CODE) {
+      quarkNote.style.display = "inline";
+      quarkNote.textContent = "（提取码：" + QUARK_CODE + "）";
+    }
+  } else {
+    /* 没配夸克：主按钮仍走 GitHub 多源回退，并把夸克那条隐藏掉 */
+    bindDownload(apkBtn, urlsFor(relBase, apkName), "Termux", document.getElementById("st1"));
+    if (quarkA && quarkA.parentNode) quarkA.parentNode.removeChild(quarkA);
+    if (quarkNote && quarkNote.parentNode) quarkNote.parentNode.removeChild(quarkNote);
+  }
   bindDownload(document.getElementById("dl-api"),
     urlsFor(apiRelBase, apiName), "Termux:API", document.getElementById("st1"));
 
