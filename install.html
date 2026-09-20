@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, interactive-widget=resizes-content">
+<title>DshShell 一键安装</title>
+<style>
+  :root { --fg:#1a1a1a; --dim:#666; --line:#e5e5e5; --acc:#2b6cb0; --bg:#fff; --ok:#2f855a; --warn:#b7791f; }
+  @media (prefers-color-scheme: dark) {
+    :root { --fg:#e8e8e8; --dim:#9a9a9a; --line:#333; --acc:#63b3ed; --bg:#141414; --ok:#68d391; --warn:#f6e05e; }
+  }
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body { margin:0; padding:20px 16px 56px; background:var(--bg); color:var(--fg);
+         font:16px/1.7 -apple-system,"Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif; }
+  .wrap { max-width:600px; margin:0 auto; }
+  h1 { font-size:22px; margin:0 0 4px; letter-spacing:.5px; }
+  .sub { color:var(--dim); font-size:14px; margin-bottom:24px; }
+  .step { border:1px solid var(--line); border-radius:12px; padding:16px; margin-bottom:14px; }
+  .step h2 { font-size:16px; margin:0 0 10px; display:flex; align-items:center; gap:8px; }
+  .num { display:inline-flex; align-items:center; justify-content:center; width:22px; height:22px;
+         border-radius:50%; background:var(--acc); color:#fff; font-size:13px; flex:0 0 auto; }
+  .note { color:var(--dim); font-size:13.5px; margin:8px 0 0; }
+  .btn { display:block; width:100%; padding:13px 14px; margin:8px 0 0; border:0; border-radius:10px;
+         background:var(--acc); color:#fff; font-size:16px; font-weight:600; text-align:center;
+         text-decoration:none; cursor:pointer; }
+  .btn.sec { background:transparent; color:var(--acc); border:1px solid var(--acc); font-weight:500; font-size:14px; padding:10px; }
+  code, .cmd { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:13px; }
+  .cmd { display:block; background:rgba(127,127,127,.13); border:1px solid var(--line); border-radius:8px;
+         padding:11px; margin:8px 0 0; word-break:break-all; user-select:all; -webkit-user-select:all; }
+  .row { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .row .btn { flex:1 1 auto; margin:0; }
+  .st { font-size:13.5px; margin-top:10px; min-height:20px; }
+  .st.ok { color:var(--ok); } .st.warn { color:var(--warn); }
+  details { margin-top:10px; } summary { cursor:pointer; color:var(--acc); font-size:14px; }
+  .alt { font-size:13.5px; }
+  .alt a { color:var(--acc); display:block; margin:6px 0; }
+  hr { border:0; border-top:1px solid var(--line); margin:26px 0; }
+  .foot { color:var(--dim); font-size:12.5px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>DshShell 一键安装</h1>
+  <div class="sub">安卓手机 · 不需要翻墙 · 不需要电脑 · 全程约 5～15 分钟</div>
+
+  <!-- ① 装 Termux -->
+  <div class="step">
+    <h2><span class="num">1</span>装 Termux（必须先做这步）</h2>
+    <div class="note" id="archnote">正在识别你的机型…</div>
+    <button class="btn" id="dl-apk">下载 Termux 安装包</button>
+    <div class="row">
+      <button class="btn sec" id="dl-api">顺带下载 Termux:API</button>
+    </div>
+    <div class="st" id="st1"></div>
+    <div class="note">
+      下完点开安装。系统会问「允许安装未知应用」→ 选<b>允许</b>。<br>
+      装好后先<b>别急着打开</b>，回到本页做第 2 步。
+    </div>
+    <details>
+      <summary>下不动 / 想手动选版本</summary>
+      <div class="alt" style="margin-top:8px">
+        官方发布页（共 6 个文件，认准你的机型）：
+        <a href="https://github.com/termux/termux-app/releases/latest" target="_blank" rel="noopener">github.com/termux/termux-app/releases</a>
+        <a href="https://gh-proxy.com/https://github.com/termux/termux-app/releases/latest" target="_blank" rel="noopener">↑ 加速打开（推荐）</a>
+        <div class="note" style="margin-top:10px">
+          大多数手机（近几年 64 位机型）用 <code>arm64-v8a</code>；<br>
+          很老的机型用 <code>armeabi-v7a</code>；<br>
+          拿不准就选 <code>universal</code>（全兼容，但 112MB）。
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ② 打开 Termux -->
+  <div class="step">
+    <h2><span class="num">2</span>打开 Termux，授权存储</h2>
+    <div class="note">在 Termux 里长按屏幕 → <b>Paste</b>（粘贴），然后回车：</div>
+    <div class="cmd" id="cmd0">termux-setup-storage</div>
+    <div class="note">弹出权限窗口 → 点<b>允许</b>。这一步不做，安装包会落在一个你打不开的地方。</div>
+    <details>
+      <summary>不会粘贴？看这里</summary>
+      <div class="alt" style="margin-top:8px">
+        Termux 里<b>长按</b>屏幕空白处会弹出菜单，点 <b>Paste</b> 就是粘贴。<br>
+        如果剪贴板里是上面那行命令，粘贴后按回车即可。<br>
+        也可以自己在 Termux 里用键盘一个字母一个字母敲：<code>termux-setup-storage</code>
+      </div>
+    </details>
+  </div>
+
+  <!-- ③ 一条命令 -->
+  <div class="step">
+    <h2><span class="num">3</span>粘贴这一条命令，剩下的全自动</h2>
+    <div class="note">在 Termux 里粘贴并按回车（下面这行会自动换源，不用管网络）：</div>
+    <div class="cmd" id="cmd1"></div>
+    <button class="btn sec" id="copy1" style="margin-top:10px">复制这条命令</button>
+    <div class="st" id="st2"></div>
+    <div class="note">
+      它会自动完成：下载安装包 → 校验完整性 → 装依赖 → 给 DSH 打安卓修复补丁
+      → 编译蓝牙原生模块 → 安装移动端适配插件 → 启动服务。<br>
+      <b>中途会问你一次</b>要「浏览器模式」还是「本机 APK 版」，按回车用默认的浏览器模式即可。
+    </div>
+  </div>
+
+  <!-- ④ 完成 -->
+  <div class="step">
+    <h2><span class="num">4</span>装完之后</h2>
+    <div class="note">
+      终端会打印一个网址<br>
+      （形如 <code>http://127.0.0.1:3080/?token=…</code>）。<br>
+      用手机浏览器打开它就能用了，建议加到桌面。
+    </div>
+    <div class="note">
+      <b>建议再做两件事</b>，否则小米/华为等系统会把它清理掉：<br>
+      · 设置 → 应用 → Termux → 省电策略 → <b>无限制</b><br>
+      · 最近任务里给 Termux <b>加锁</b>（下拉图标）
+    </div>
+  </div>
+
+  <hr>
+  <div class="foot">
+    <div>遇到问题：再跑一次第 3 步那条命令即可（安装器是幂等的，不会重复装）。</div>
+    <div id="srcnote" style="margin-top:6px"></div>
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   引导页逻辑：只做两件事
+     1) 按机型给对应的 Termux APK 直链，并自动在多个加速源之间回退
+     2) 把「一条命令」拼好（带加速前缀）显示出来，可一键复制
+   为什么需要换源：接收方网络千差万别，GitHub 原址在部分网络下不通。
+   镜像顺序按"手机侧无 VPN 实测"排（2026-09-19）。
+   ============================================================ */
+(function () {
+  var TERMUX_TAG = "v0.118.3";
+  var API_TAG = "v0.53.0";
+  var REPO = "18477514055/DeepseekHarness-mobile";
+  var REF = "main";
+  var BOOT = "bootstrap.sh";
+
+  /* 加速前缀（2026-09-19 实测可用；顺序=优先尝试顺序） */
+  var PROXIES = [
+    "https://gh-proxy.com/",
+    "https://ghproxy.net/",
+    "https://ghfast.top/",
+    ""                          /* 空 = 官方原址，放最后 */
+  ];
+
+  /* 按 User-Agent 猜架构：猜不准就给 arm64（覆盖绝大多数现役机型） */
+  function guessArch() {
+    var ua = navigator.userAgent || "";
+    if (/arm64|aarch64|armv8/i.test(ua)) return "arm64-v8a";
+    if (/armv7|armeabi/i.test(ua)) return "armeabi-v7a";
+    if (/x86_64/i.test(ua)) return "x86_64";
+    if (/i686|x86/i.test(ua)) return "x86";
+    return "arm64-v8a";   /* 默认值：主流现役机型 */
+  }
+
+  var arch = guessArch();
+  var apkName = "termux-app_" + TERMUX_TAG + "+github-debug_" + arch + ".apk";
+  var apiName = "termux-api-app_v" + API_TAG.replace(/^v/, "") + "+github.debug.apk";
+  var relBase = "https://github.com/termux/termux-app/releases/download/" + TERMUX_TAG + "/";
+  var apiRelBase = "https://github.com/termux/termux-api/releases/download/" + API_TAG + "/";
+
+  function urlsFor(base, name) {
+    var out = [], i;
+    for (i = 0; i < PROXIES.length; i++) out.push(PROXIES[i] + base + name);
+    return out;
+  }
+
+  function say(el, msg, cls) {
+    el.textContent = msg;
+    el.className = "st" + (cls ? " " + cls : "");
+  }
+
+  /* 逐个镜像试着触发下载：把 <a> 的 href 依次换掉，并给用户可见提示。
+     浏览器不会告诉我们"下没下成功"，所以策略是：先给第一个源，
+     同时提示"若 5 秒内没开始下载，点这里换源"。 */
+  function bindDownload(btn, urls, label, stEl) {
+    var idx = 0;
+    function go() {
+      var u = urls[idx];
+      say(stEl, "正在从第 " + (idx + 1) + " 个源下载 " + label + "…（若 5 秒内没反应，再点一次按钮会换源）", "warn");
+      var a = document.createElement("a");
+      a.href = u; a.rel = "noopener"; a.download = "";
+      document.body.appendChild(a); a.click(); document.body.removeChild(a);
+      idx = (idx + 1) % urls.length;
+      if (idx === 0) {
+        setTimeout(function () {
+          say(stEl, "已经试完全部源。都下不动的话，展开上面的「下不动 / 想手动选版本」，或用别的网络再试。", "warn");
+        }, 1200);
+      }
+    }
+    btn.addEventListener("click", go);
+  }
+
+  /* 顶部说明 */
+  document.getElementById("archnote").innerHTML =
+    "识别到你的机型需要：<b>" + arch + "</b> 版本"
+    + (arch === "arm64-v8a" ? "（绝大多数现役 64 位手机都是这个）" : "")
+    + "。点下面按钮下载。";
+
+  /* 两个下载按钮 */
+  bindDownload(document.getElementById("dl-apk"),
+    urlsFor(relBase, apkName), "Termux", document.getElementById("st1"));
+  bindDownload(document.getElementById("dl-api"),
+    urlsFor(apiRelBase, apiName), "Termux:API", document.getElementById("st1"));
+
+  /* 第 3 步那条命令：bootstrap 走仓库 raw + 加速前缀 */
+  var rawBase = "https://raw.githubusercontent.com/" + REPO + "/" + REF + "/" + BOOT;
+  var bootUrl = PROXIES[0] + rawBase;      /* 默认给最稳的那个加速源 */
+  var one = "bash <(curl -fsSL '" + bootUrl + "')";
+  document.getElementById("cmd1").textContent = one;
+  document.getElementById("copy1").addEventListener("click", function () {
+    var el = document.getElementById("cmd1");
+    var t = el.textContent;
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(t).then(function () {
+        say(document.getElementById("st2"), "已复制。回到 Termux 长按 → Paste → 回车。", "ok");
+      }, function () { fallbackCopy(el); });
+    } else { fallbackCopy(el); }
+  });
+  function fallbackCopy(el) {
+    try {
+      var r = document.createRange(); r.selectNodeContents(el);
+      var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+      document.execCommand("copy"); s.removeAllRanges();
+      say(document.getElementById("st2"), "已复制（兼容模式）。回到 Termux 长按 → Paste → 回车。", "ok");
+    } catch (e) {
+      say(document.getElementById("st2"), "复制失败，请长按上面的命令手动选择复制。", "warn");
+    }
+  }
+
+  /* 底部：显示备用命令（万一默认源不通） */
+  var alts = [];
+  for (var i = 0; i < PROXIES.length; i++) alts.push(PROXIES[i] + rawBase);
+  document.getElementById("srcnote").innerHTML =
+    "第 3 步的备用源（若默认那条下不动，把命令换成下面任意一条）：<br>"
+    + alts.map(function (u) {
+        return "<span class='cmd' style='font-size:12px'>bash &lt;(curl -fsSL '" + u + "')</span>";
+      }).join("");
+})();
+</script>
+</body>
+</html>
