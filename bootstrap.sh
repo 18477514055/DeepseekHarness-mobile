@@ -12,9 +12,9 @@
 set -u
 # ↓↓↓ 发布者需要把下面两行填上（填好后本脚本就能独立工作）↓↓↓
 TARBALL_URL="${DSHM_TARBALL_URL:-}"
-SHA256="1299819c18a5d1da2a2e2aa1846e9653be93aa3b5a339813675fc820d6c666bc"
+SHA256="2cade7b8b6129d208a4aa81a04e61271ee3b2439d9d31fa12a08853e7191dc31"
 # ★ 多源候选（打包时由 dist/发布直链.txt 自动生成）：GitHub 原址 + 国内加速前缀，逐个试
-MIRRORS=("https://gh-proxy.com/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260919.tar.gz" "https://ghproxy.net/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260919.tar.gz" "https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260919.tar.gz" "https://cdn.jsdelivr.net/gh/18477514055/DeepseekHarness-mobile@main/dsh-mobile-20260919.tar.gz" "https://ghfast.top/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260919.tar.gz" "https://github.com/18477514055/DeepseekHarness-mobile/raw/main/dsh-mobile-20260919.tar.gz")
+MIRRORS=("https://gh-proxy.com/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://ghproxy.net/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://cdn.jsdelivr.net/gh/18477514055/DeepseekHarness-mobile@main/dsh-mobile-20260920.tar.gz" "https://ghfast.top/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz" "https://github.com/18477514055/DeepseekHarness-mobile/raw/main/dsh-mobile-20260920.tar.gz")
 # ↑↑↑ 发布者填写区结束 ↑↑↑
 
 NAME="dsh-mobile-setup"
@@ -96,6 +96,58 @@ tar xzf "$TAR" -C "$WORK/src" --strip-components=1 || die "解压失败"
 [ -f "$WORK/src/install.sh" ] || die "压缩包内容异常（缺少 install.sh）"
 grn "   解压到 $WORK/src"
 
-echo "④ 开始安装…"
+# ★ 2026-09-19 新增：顺手把 Termux:API 也装上。
+#   为什么放在这里（用户实测反馈驱动）：很多人手机上 termux-setup-storage 跑不通，
+#   共享存储与 Termux 私有目录不互通。此时「先下到下载目录再点安装」这条路是断的。
+#   而 Termux:API 是**必须安装的 APK**（它提供 termux-open 等命令）。
+#   ⇒ 那就由脚本自己下到共享存储（不依赖 ~/storage 符号链接）并尝试拉起安装界面；
+#     万一共享存储也不可用，就只提示、**绝不中断**，让主安装照常走完。
+echo "④ 准备 Termux:API（可选但强烈建议）…"
+TA_NAME="termux-api-app_v0.53.0+github.debug.apk"
+TA_SHA="ecf916ff80ae751e65c092f51c055cce4de417ebeea8e449cd0f294afdbde39a"
+TA_BASE="https://github.com/termux/termux-api/releases/download/v0.53.0/$TA_NAME"
+TA_URLS=(
+  "https://gh-proxy.com/$TA_BASE"
+  "https://ghproxy.net/$TA_BASE"
+  "$TA_BASE"
+)
+TA_SHARED=""
+for d in /storage/emulated/0/Download /sdcard/Download /storage/self/primary/Download /mnt/sdcard/Download; do
+  [ -d "$d" ] && [ -w "$d" ] && { TA_SHARED="$d"; break; }
+done
+TA_DEST="${TA_SHARED:-$WORK}/$TA_NAME"
+if command -v termux-open >/dev/null 2>&1; then
+  grn "   termux-api 客户端命令已在，跳过"
+elif [ -f "$TA_DEST" ] && [ "$(sha256sum "$TA_DEST" 2>/dev/null | cut -d' ' -f1)" = "$TA_SHA" ]; then
+  grn "   Termux:API 安装包已在：$TA_DEST"
+else
+  echo "   下载 Termux:API 安装包…"
+  OKA=0
+  for u in "${TA_URLS[@]}"; do
+    rm -f "$TA_DEST.part"
+    if curl -L --fail --connect-timeout 15 -m 180 -s -o "$TA_DEST.part" "$u"; then
+      if [ "$(sha256sum "$TA_DEST.part" 2>/dev/null | cut -d' ' -f1)" = "$TA_SHA" ]; then
+        mv -f "$TA_DEST.part" "$TA_DEST"; OKA=1; break
+      fi
+    fi
+    rm -f "$TA_DEST.part"
+  done
+  if [ "$OKA" = 1 ]; then
+    grn "   已下载并校验：$TA_DEST"
+    if [ -t 0 ]; then
+      if command -v termux-open >/dev/null 2>&1; then
+        termux-open "$TA_DEST" >/dev/null 2>&1 || true
+      else
+        am start -a android.intent.action.VIEW -d "file://$TA_DEST" \
+          -t application/vnd.android.package-archive >/dev/null 2>&1 || true
+      fi
+      echo "   → 若弹出安装界面，点「安装」即可（装完会回到这里）"
+    fi
+  else
+    echo "   ⚠️ Termux:API 没下下来（不影响主安装）。可稍后手动装，或重跑本命令。"
+  fi
+fi
+
+echo "⑤ 开始安装 DSH…"
 echo
 exec bash "$WORK/src/install.sh" "$@"
