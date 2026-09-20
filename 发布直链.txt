@@ -1,0 +1,12 @@
+# 发布直链清单（由 tools/make-direct-links.sh 自动生成，勿手改）
+# 生成时间：2026-09-20 14:36:16
+# 格式：<sha256>  <文件名>  <候选直链...>（脚本逐条试，每条都校验 sha256）
+# 仓库：18477514055/DeepseekHarness-mobile  分支：main  Release：v20260920
+#
+# ① 一键脚本与安装包（走 raw 主干，jsDelivr 可用）
+#2cade7b8b6129d208a4aa81a04e61271ee3b2439d9d31fa12a08853e7191dc31  dsh-mobile-20260920.tar.gz
+2cade7b8b6129d208a4aa81a04e61271ee3b2439d9d31fa12a08853e7191dc31  dsh-mobile-20260920.tar.gz https://gh-proxy.com/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz https://ghproxy.net/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz https://cdn.jsdelivr.net/gh/18477514055/DeepseekHarness-mobile@main/dsh-mobile-20260920.tar.gz https://ghfast.top/https://raw.githubusercontent.com/18477514055/DeepseekHarness-mobile/main/dsh-mobile-20260920.tar.gz https://github.com/18477514055/DeepseekHarness-mobile/raw/main/dsh-mobile-20260920.tar.gz
+#
+# ② Termux / Termux:API（走 Release 附件；★ 两者必须同签名 b6da0148…48ee5e1）
+72fdb596045116bf5ba1b5bdf5b26fddb9acc0bd074ad9f2da9eb0ae85e83a4e  termux-app_v0.118.3+github-debug_arm64-v8a.apk https://gh-proxy.com/https://github.com/18477514055/DeepseekHarness-mobile/releases/download/v20260920/termux-app_v0.118.3+github-debug_arm64-v8a.apk https://ghproxy.net/https://github.com/18477514055/DeepseekHarness-mobile/releases/download/v20260920/termux-app_v0.118.3+github-debug_arm64-v8a.apk https://github.com/18477514055/DeepseekHarness-mobile/releases/download/v20260920/termux-app_v0.118.3+github-debug_arm64-v8a.apk
+ecf916ff80ae751e65c092f51c055cce4de417ebeea8e449cd0f294afdbde39a  termux-api-app_v0.53.0+github.debug.apk https://gh-proxy.com/https://github.com/18477514055/DeepseekHarness-mobile/releases/download/v20260920/termux-api-app_v0.53.0+github.debug.apk https://ghproxy.net/https://github.com/18477514055/DeepseekHarness-mobile/releases/download/v20260920/termux-api-app_v0.53.0+github.debug.apk https://github.com/18477514055/DeepseekHarness-mobile/releases/download/v20260920/termux-api-app_v0.53.0+github.debug.apk
